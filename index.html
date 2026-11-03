@@ -8,246 +8,312 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Forma">
-<meta name="theme-color" content="#F2F5F3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E1412" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f3f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap">
 <style>
-/* Layout: one narrow app column, sticky tab bar, each tab = summary first, then input form, then history */
+/* Style: pastel-consumer (app sheet, seed 946781479). Phone-first: one 16px-margin column (max 640px),
+   iOS-style large title per tab, white 20px cards on the off-white ground, bottom tab bar.
+   Each tab has its own pale tint for small tiles and chips: calories cobalt, weight teal, training amber. */
 :root{
-  --bg:#F2F5F3; --surface:#FFFFFF; --ink:#14201B; --muted:#5A6A64; --line:#DAE2DE;
-  --accent:#1F5FD1; --accent-ink:#FFFFFF; --accent-soft:#E2EBFB;
-  --good:#1D8657; --bad:#C2412D; --warn:#A86C12;
-  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --body:"Figtree", "Segoe UI", system-ui, sans-serif;
-  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
-  --r:12px;
+  --ground:#f3f5f7; --surface:#ffffff; --raised:#f2f6fa; --border:#e6e6e6; --rule:#f0f1f3; --control:#d6d9dd;
+  --text:#1b1d1f; --muted:#5c6064; --primary:#1b1d1f; --on-primary:#ffffff;
+  --accent:#1d5fd6; --accent-soft:#dcf1ff; --accent-ink:#0a3a80;
+  --teal:#1f7f8c; --teal-soft:#d9f2f4; --teal-ink:#0e4f59;
+  --amber:#b45309; --amber-soft:#fdeedc; --amber-ink:#7a3b06;
+  --positive:#2f7a45; --negative:#c41c29; --negative-soft:#ffedea; --negative-ink:#831c1e;
+  --grid:#e5e5e5; --track:#e9edf1;
+  --radius-card:20px; --radius-control:10px; --radius-chip:8px;
+  --font:"Manrope", -apple-system, "SF Pro Text", system-ui, sans-serif;
+  color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0E1412; --surface:#17201C; --ink:#E5EDE9; --muted:#93A39C; --line:#2A3531;
-  --accent:#86A9F6; --accent-ink:#0E1412; --accent-soft:#1D2944;
-  --good:#4CC38A; --bad:#F07862; --warn:#E0A84A; color-scheme:dark}}
+  --ground:#000000; --surface:#151517; --raised:#1f1f22; --border:#2a2a2d; --rule:#232326; --control:#444448;
+  --text:#ffffff; --muted:#b4b4b4; --primary:#ffffff; --on-primary:#000000;
+  --accent:#6b9cf5; --accent-soft:#14233d; --accent-ink:#b3cdff;
+  --teal:#4fc0cd; --teal-soft:#0f2a2d; --teal-ink:#9fe0e8;
+  --amber:#f0a14a; --amber-soft:#2e1f0c; --amber-ink:#f7c88f;
+  --positive:#4cc37a; --negative:#ff6b6b; --negative-soft:#2c1a1c; --negative-ink:#ff9b9b;
+  --grid:#2b2b2e; --track:#26262a; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0E1412; --surface:#17201C; --ink:#E5EDE9; --muted:#93A39C; --line:#2A3531;
-  --accent:#86A9F6; --accent-ink:#0E1412; --accent-soft:#1D2944;
-  --good:#4CC38A; --bad:#F07862; --warn:#E0A84A; color-scheme:dark}
+  --ground:#000000; --surface:#151517; --raised:#1f1f22; --border:#2a2a2d; --rule:#232326; --control:#444448;
+  --text:#ffffff; --muted:#b4b4b4; --primary:#ffffff; --on-primary:#000000;
+  --accent:#6b9cf5; --accent-soft:#14233d; --accent-ink:#b3cdff;
+  --teal:#4fc0cd; --teal-soft:#0f2a2d; --teal-ink:#9fe0e8;
+  --amber:#f0a14a; --amber-soft:#2e1f0c; --amber-ink:#f7c88f;
+  --positive:#4cc37a; --negative:#ff6b6b; --negative-soft:#2c1a1c; --negative-ink:#ff9b9b;
+  --grid:#2b2b2e; --track:#26262a; color-scheme:dark}
 
 *{box-sizing:border-box}
-:root{color-scheme:light;padding-top:env(safe-area-inset-top, 0px);padding-bottom:env(safe-area-inset-bottom, 0px);background:var(--bg);-webkit-text-size-adjust:100%}
+html{background:var(--ground);-webkit-text-size-adjust:100%}
 [hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);-webkit-tap-highlight-color:transparent;
-  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 48px}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--bg)}
-.app{max-width:760px;margin:0 auto}
-header.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:22px 10px}
-h1{font:800 clamp(26px,5vw,34px)/1.05 var(--display);letter-spacing:-.02em;margin:0}
-h1 span{color:var(--accent)}
-.status{font-size:13px;color:var(--muted)}
-.status.warn{color:var(--warn)} .status.err{color:var(--bad)}
+body{margin:0;background:var(--ground);color:var(--text);font:400 16px/1.5 var(--font);
+  -webkit-tap-highlight-color:transparent;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-bottom:calc(84px + env(safe-area-inset-bottom, 0px))}
+.num{font-variant-numeric:tabular-nums}
+.app{max-width:640px;margin:0 auto}
 
-nav.tabs{position:sticky;top:env(safe-area-inset-top, 0px);z-index:5;background:var(--bg);display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px 0 12px}
-nav.tabs button{font:600 14px/1 var(--body);border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:11px 6px;border-radius:999px;cursor:pointer}
-nav.tabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
-nav.tabs button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* title row */
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px 14px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mark{flex:none;width:30px;height:30px;border-radius:9px;background:var(--accent);display:grid;place-items:center}
+.mark svg{display:block}
+h1{font-size:28px;line-height:1.15;font-weight:600;letter-spacing:-.02em;margin:0}
+.status{font-size:14px;color:var(--negative);margin:0 0 12px}
 
 section.tab{display:grid;gap:16px}
-h2{font:700 20px/1.2 var(--display);margin:0;text-wrap:balance}
-h3{font:600 12px/1 var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;gap:14px;min-width:0}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-.field{display:grid;gap:5px;flex:1 1 120px;min-width:0}
-.field.wide{flex-basis:220px}
-label{font-size:13px;color:var(--muted);font-weight:500}
-input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;min-width:0}
-textarea{min-height:86px;resize:vertical}
-.btn{font:600 14px/1 var(--body);background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:12px 16px;cursor:pointer;white-space:nowrap}
-.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
-.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.muted{color:var(--muted)}
-.small{font-size:13px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:20px;display:grid;gap:16px;min-width:0}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h2{font-size:20px;line-height:1.25;font-weight:600;margin:0;letter-spacing:-.01em}
+.sub{font-size:14px;color:var(--muted);margin:0}
+.lead{display:grid;gap:2px}
+.lead .label{font-size:14px;color:var(--muted)}
+.big{font-size:34px;line-height:1.1;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.big small{font-size:16px;font-weight:500;color:var(--muted);margin-left:4px;letter-spacing:0}
+.big.over{color:var(--negative)}
 
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
-.stat{display:grid;gap:4px}
-.stat b{font:700 26px/1.1 var(--display);font-variant-numeric:tabular-nums}
-.stat b small{font:500 13px var(--body);color:var(--muted);margin-left:3px}
-.good{color:var(--good)} .bad{color:var(--bad)} .warnc{color:var(--warn)}
+.figs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule);padding-top:14px}
+.figs.two{grid-template-columns:repeat(2,1fr)}
+.fig{display:grid;gap:2px;padding-inline:12px;border-left:1px solid var(--rule);min-width:0}
+.fig:first-child{padding-left:0;border-left:0}
+.fig .label{font-size:13px;color:var(--muted)}
+.fig b{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fig b small{font-size:13px;font-weight:500;color:var(--muted);margin-left:2px}
+.good{color:var(--positive)} .bad{color:var(--negative)}
 
-.pill{display:inline-block;font:600 12px/1 var(--body);padding:6px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
-.pill.bad{background:transparent;border:1px solid var(--bad);color:var(--bad)}
+.chip{display:inline-flex;align-items:center;gap:6px;flex:none;white-space:nowrap;font-size:13px;font-weight:500;line-height:1;padding:7px 10px;border-radius:999px}
+.chip.cal{background:var(--accent-soft);color:var(--accent-ink)}
+.chip.wt{background:var(--teal-soft);color:var(--teal-ink)}
+.chip.tr{background:var(--amber-soft);color:var(--amber-ink)}
+.chip.warn{background:var(--negative-soft);color:var(--negative-ink)}
 
-.list{display:grid;margin:0;padding:0;list-style:none}
-.list li{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line);min-width:0}
+/* plan track: the limit is the track, what was eaten fills it */
+.track{display:flex;gap:2px;height:12px;border-radius:999px;background:var(--track);overflow:hidden}
+.track span{display:block;height:100%;background:var(--accent);flex:none}
+.track span.over{background:var(--negative)}
+.meter{display:grid;gap:6px}
+.track-ends{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+
+/* forms */
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.field{display:grid;gap:8px;flex:1 1 130px;min-width:0}
+.field.wide{flex-basis:100%}
+label,.flabel{font-size:14px;font-weight:500}
+.hint{font-size:13px;color:var(--muted);margin:0}
+input,select,textarea{font:inherit;font-size:16px;color:var(--text);background:var(--surface);border:1px solid var(--control);
+  border-radius:var(--radius-control);height:44px;padding:0 12px;width:100%;min-width:0}
+textarea{height:auto;min-height:96px;padding:10px 12px;resize:vertical}
+select{appearance:none;-webkit-appearance:none;padding-right:36px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235c6064' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center}
+input[type=date]{-webkit-appearance:none;appearance:none}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,label.btn:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.btn{font:inherit;font-size:16px;font-weight:600;height:44px;padding:0 18px;border-radius:var(--radius-control);border:0;
+  background:var(--primary);color:var(--on-primary);cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center}
+.btn.ghost{background:var(--raised);color:var(--text);border:1px solid var(--border)}
+.btn:active{transform:scale(.98)}
+.seg{display:flex;gap:4px;align-items:center}
+.icon-btn{width:44px;height:44px;border-radius:var(--radius-control);border:1px solid var(--border);background:var(--surface);color:var(--text);display:grid;place-items:center;cursor:pointer}
+.datechip{width:auto;height:36px;border-radius:999px;background:var(--raised);border:1px solid var(--border);padding:0 12px;font-size:14px;font-weight:500}
+
+/* lists */
+.list{list-style:none;margin:0;padding:0;display:grid}
+.list li{display:flex;align-items:center;gap:12px;min-height:56px;padding-block:10px;border-top:1px solid var(--rule)}
 .list li:first-child{border-top:0}
-.list .grow{flex:1;min-width:0;overflow-wrap:anywhere}
-.del{font:500 12px var(--body);background:none;border:1px solid transparent;color:var(--muted);border-radius:6px;padding:5px 8px;cursor:pointer}
-.del:hover{border-color:var(--line)}
-.del.armed{color:var(--bad);border-color:var(--bad)}
-.empty{color:var(--muted);font-size:14px;padding:6px 0}
+.list .grow{flex:1;min-width:0}
+.list .t{font-weight:500}
+.list .s{font-size:13px;color:var(--muted)}
+.list .v{font-weight:600;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.list .d{font-size:13px;text-align:right;font-variant-numeric:tabular-nums;min-width:44px}
+.notes{white-space:pre-wrap;font-size:14px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+.del{font:inherit;font-size:13px;font-weight:500;color:var(--muted);background:none;border:0;padding:8px 4px 8px 8px;cursor:pointer;flex:none}
+.del.armed{color:var(--negative)}
+.empty{font-size:14px;color:var(--muted);border:1px dashed var(--control);border-radius:var(--radius-chip);padding:12px 14px;margin:0}
 
-.chart{width:100%;height:auto;display:block}
-.chart text{fill:var(--muted);font:11px var(--mono)}
-.today{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center}
-@media (max-width:480px){.today{grid-template-columns:1fr;justify-items:center}.today .stats{width:100%}}
-.ring text{font-family:var(--display)}
-.weeknav{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.weeknav button{font:600 13px var(--body);background:none;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 11px;cursor:pointer}
-.tr-head{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
-.tr-notes{white-space:pre-wrap;color:var(--muted);font-size:14px;margin-top:4px}
-.list li.tr{align-items:flex-start}
-.formula{font-size:13px;color:var(--muted)}
-@media (prefers-reduced-motion:no-preference){.ring .arc{transition:stroke-dashoffset .5s ease}}
+/* formula table */
+.ftable{width:100%;border-collapse:collapse;font-size:14px}
+.ftable th{font-weight:400;color:var(--muted);text-align:left;padding:0 0 8px}
+.ftable th.n,.ftable td.n{text-align:right}
+.ftable td{padding:10px 0;border-top:1px solid var(--rule);font-variant-numeric:tabular-nums}
+.ftable tr.sel td{font-weight:600}
+
+/* charts */
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart text{fill:var(--muted);font:500 11px var(--font);font-variant-numeric:tabular-nums}
+
+/* bottom tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--border);
+  padding:6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px))}
+.tabbar .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tabbar button{font:inherit;font-size:11px;font-weight:500;color:var(--muted);background:none;border:0;padding:4px 0;min-height:52px;
+  display:grid;justify-items:center;align-content:center;gap:3px;cursor:pointer}
+.tabbar button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-selected="true"]{color:var(--text);font-weight:600}
+.tabbar button[aria-selected="true"] svg{stroke-width:2.2}
+@media (prefers-reduced-motion:no-preference){.track span{transition:width .35s ease}.btn{transition:transform .08s}}
+@media (min-width:700px){.head{padding-top:32px}}
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="top">
-    <h1>Dziennik <span>Formy</span></h1>
-    <div class="status" id="status">Dane zapisane na tym telefonie</div>
+  <header class="head">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="37.7 50.3" transform="rotate(-90 12 12)" stroke-linecap="round"/></svg></span>
+      <h1 id="title">Kalorie</h1>
+    </div>
+    <input type="date" id="c-date" class="datechip num" aria-label="Wybrany dzień">
   </header>
+  <p class="status" id="status" hidden></p>
 
-  <nav class="tabs" role="tablist">
-    <button role="tab" id="t-waga" data-tab="waga">Waga</button>
-    <button role="tab" id="t-kalorie" data-tab="kalorie" aria-selected="true">Kalorie</button>
-    <button role="tab" id="t-trening" data-tab="trening">Trening</button>
-    <button role="tab" id="t-profil" data-tab="profil">Profil</button>
-  </nav>
+  <!-- KALORIE -->
+  <section class="tab" id="kalorie" aria-labelledby="t-kalorie">
+    <div class="card" id="c-day">
+      <div class="card-head"><h2 id="c-dayname">Dziś</h2><span class="chip cal num" id="c-limitchip"></span></div>
+      <div id="c-dayblock"></div>
+      <form id="c-form" class="row" autocomplete="off">
+        <div class="field"><label for="c-kcal" id="c-kcal-label">Zjedzone dziś</label>
+          <input type="text" id="c-kcal" inputmode="numeric" pattern="[0-9 ]*" placeholder="kcal, np. 1850"></div>
+        <button class="btn" type="submit">Zapisz</button>
+      </form>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h2 id="c-weektitle">Tydzień</h2>
+        <div class="seg">
+          <button type="button" class="icon-btn" id="c-prev" aria-label="Poprzedni tydzień"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button type="button" class="icon-btn" id="c-next" aria-label="Następny tydzień"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+      <div id="c-weekblock"></div>
+      <div id="c-weekchart"></div>
+    </div>
+  </section>
 
   <!-- WAGA -->
-  <section class="tab" id="waga" hidden>
-    <div class="panel">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <h2>Waga co tydzień</h2>
-        <span id="w-reminder"></span>
-      </div>
-      <div class="stats" id="w-stats"></div>
+  <section class="tab" id="waga" hidden aria-labelledby="t-waga">
+    <div class="card">
+      <div class="card-head"><h2>Waga co tydzień</h2><span id="w-reminder"></span></div>
+      <div id="w-lead"></div>
       <div id="w-chart"></div>
+      <div id="w-figs"></div>
     </div>
-    <form class="panel" id="w-form">
-      <h3>Nowy pomiar</h3>
+    <form class="card" id="w-form" autocomplete="off">
+      <h2>Nowy pomiar</h2>
       <div class="row">
         <div class="field"><label for="w-date">Data</label><input type="date" id="w-date" required></div>
-        <div class="field"><label for="w-kg">Waga (kg)</label><input type="text" id="w-kg" inputmode="decimal" autocomplete="off" placeholder="np. 82,4" required></div>
-        <button class="btn" type="submit">Zapisz pomiar</button>
+        <div class="field"><label for="w-kg">Waga (kg)</label><input type="text" id="w-kg" inputmode="decimal" placeholder="np. 82,4"></div>
       </div>
+      <p class="hint">Waż się raz w tygodniu, rano, na czczo.</p>
+      <button class="btn" type="submit">Zapisz pomiar</button>
     </form>
-    <div class="panel">
-      <h3>Historia pomiarów</h3>
+    <div class="card">
+      <h2>Historia</h2>
       <ul class="list" id="w-list"></ul>
     </div>
   </section>
 
-  <!-- KALORIE -->
-  <section class="tab" id="kalorie">
-    <div class="panel">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <h2 id="c-dayname">Dziś</h2>
-        <div class="field" style="flex:0 0 170px"><label for="c-date" class="small">Dzień</label><input type="date" id="c-date"></div>
-      </div>
-      <div class="today">
-        <div id="c-ring"></div>
-        <div class="stats" id="c-daystats"></div>
-      </div>
-      <p class="formula" id="c-dayformula"></p>
-    </div>
-    <form class="panel" id="c-form">
-      <h3>Zjedzone kalorie</h3>
-      <div class="row">
-        <div class="field wide"><label for="c-kcal" id="c-kcal-label">Ile zjadłeś dziś (kcal)</label><input type="number" id="c-kcal" min="0" max="20000" step="1" inputmode="numeric" placeholder="np. 1850"></div>
-        <button class="btn" type="submit">Zapisz</button>
-      </div>
-      <p class="small muted">Jedna liczba za cały dzień. Nowa liczba zastępuje poprzednią, a 0 lub puste pole usuwa wpis.</p>
-    </form>
-    <div class="panel">
-      <div class="weeknav">
-        <button type="button" id="c-prev" aria-label="Poprzedni tydzień">← Poprz.</button>
-        <h2 id="c-weektitle" style="text-align:center">Tydzień</h2>
-        <button type="button" id="c-next" aria-label="Następny tydzień">Nast. →</button>
-      </div>
-      <div class="stats" id="c-weekstats"></div>
-      <div id="c-weekchart"></div>
-      <p class="formula" id="c-weekformula"></p>
-    </div>
-  </section>
-
   <!-- TRENING -->
-  <section class="tab" id="trening" hidden>
-    <div class="panel">
-      <h2>Dziennik treningowy</h2>
-      <div class="stats" id="t-stats"></div>
+  <section class="tab" id="trening" hidden aria-labelledby="t-trening">
+    <div class="card">
+      <div class="card-head"><h2>Ten tydzień</h2><span class="sub num" id="t-range"></span></div>
+      <div id="t-lead"></div>
     </div>
-    <form class="panel" id="t-form">
-      <h3>Nowy trening</h3>
+    <form class="card" id="t-form" autocomplete="off">
+      <h2>Nowy trening</h2>
       <div class="row">
         <div class="field"><label for="t-date">Data</label><input type="date" id="t-date" required></div>
         <div class="field"><label for="t-type">Rodzaj</label>
           <select id="t-type"><option>Siłownia</option><option>Bieganie</option><option>Rower</option><option>Pływanie</option><option>Spacer</option><option>Cardio</option><option>Rozciąganie</option><option>Inne</option></select></div>
-        <div class="field"><label for="t-min">Czas (min)</label><input type="number" id="t-min" min="1" max="600" step="1" inputmode="numeric" placeholder="np. 60"></div>
-        <div class="field"><label for="t-kcal">Spalone (kcal)</label><input type="number" id="t-kcal" min="0" max="5000" step="1" inputmode="numeric" placeholder="opcjonalnie"></div>
       </div>
-      <div class="field"><label for="t-notes">Ćwiczenia i notatki</label>
-        <textarea id="t-notes" maxlength="2000" placeholder="np. Przysiad 4×8 × 80 kg&#10;Wyciskanie 4×6 × 70 kg&#10;Wiosłowanie 3×10 × 50 kg"></textarea></div>
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <span></span>
-        <button class="btn" type="submit">Zapisz trening</button>
+      <div class="row">
+        <div class="field"><label for="t-min">Czas (min)</label><input type="text" id="t-min" inputmode="numeric" placeholder="np. 60"></div>
+        <div class="field"><label for="t-kcal">Spalone (kcal)</label><input type="text" id="t-kcal" inputmode="numeric" placeholder="opcjonalnie"></div>
       </div>
+      <div class="field wide"><label for="t-notes">Ćwiczenia i notatki</label>
+        <textarea id="t-notes" maxlength="2000" placeholder="Przysiad 4×8 × 80 kg&#10;Wyciskanie 4×6 × 70 kg"></textarea></div>
+      <button class="btn" type="submit">Zapisz trening</button>
     </form>
-    <div class="panel">
-      <h3>Historia treningów</h3>
+    <div class="card">
+      <h2>Historia</h2>
       <ul class="list" id="t-list"></ul>
     </div>
   </section>
 
   <!-- PROFIL -->
-  <section class="tab" id="profil" hidden>
-    <form class="panel" id="p-form">
+  <section class="tab" id="profil" hidden aria-labelledby="t-profil">
+    <div class="card" id="p-result"></div>
+    <form class="card" id="p-form" autocomplete="off">
       <h2>Twoje dane</h2>
       <div class="row">
         <div class="field"><label for="p-sex">Płeć</label><select id="p-sex"><option value="m">Mężczyzna</option><option value="k">Kobieta</option></select></div>
-        <div class="field"><label for="p-age">Wiek (lata)</label><input type="number" id="p-age" min="10" max="110" step="1" inputmode="numeric" required></div>
-        <div class="field"><label for="p-height">Wzrost (cm)</label><input type="number" id="p-height" min="100" max="250" step="1" inputmode="numeric" required></div>
-        <div class="field"><label for="p-weight">Waga (kg)</label><input type="text" id="p-weight" inputmode="decimal" autocomplete="off" required></div>
+        <div class="field"><label for="p-age">Wiek</label><input type="text" id="p-age" inputmode="numeric" placeholder="lata"></div>
       </div>
       <div class="row">
-        <div class="field wide"><label for="p-act">Aktywność</label>
-          <select id="p-act">
-            <option value="1.2">Siedząca, brak treningów (×1,2)</option>
-            <option value="1.375">Lekka, 1–3 treningi w tygodniu (×1,375)</option>
-            <option value="1.55">Umiarkowana, 3–5 treningów (×1,55)</option>
-            <option value="1.725">Duża, 6–7 treningów (×1,725)</option>
-            <option value="1.9">Bardzo duża, praca fizyczna + trening (×1,9)</option>
-          </select></div>
-        <div class="field wide"><label for="p-goal">Cel</label>
-          <select id="p-goal">
-            <option value="-500">Schudnąć ok. 0,5 kg / tydzień (−500 kcal)</option>
-            <option value="-250">Schudnąć powoli (−250 kcal)</option>
-            <option value="0">Utrzymać wagę</option>
-            <option value="250">Przytyć powoli (+250 kcal)</option>
-          </select></div>
-        <div class="field"><label for="p-target">Waga docelowa (kg)</label><input type="text" id="p-target" inputmode="decimal" autocomplete="off" placeholder="opcjonalnie"></div>
+        <div class="field"><label for="p-height">Wzrost (cm)</label><input type="text" id="p-height" inputmode="numeric" placeholder="np. 180"></div>
+        <div class="field"><label for="p-weight">Waga (kg)</label><input type="text" id="p-weight" inputmode="decimal" placeholder="np. 82,4"></div>
       </div>
-      <div class="row" style="justify-content:flex-end"><button class="btn" type="submit">Zapisz i przelicz</button></div>
-      <p class="small muted" id="p-saved" hidden>Zapisano.</p>
+      <div class="field wide"><label for="p-act">Aktywność w ciągu tygodnia</label>
+        <select id="p-act">
+          <option value="" disabled>Wybierz…</option>
+          <option value="1.2">Siedząca – praca przy biurku, bez treningów</option>
+          <option value="1.375">Lekka – trening 1–3 razy w tygodniu</option>
+          <option value="1.55">Umiarkowana – trening 3–5 razy w tygodniu</option>
+          <option value="1.725">Duża – trening 6–7 razy w tygodniu</option>
+          <option value="1.9">Bardzo duża – praca fizyczna i treningi</option>
+        </select>
+        <p class="hint">Wybierz uczciwie. Za wysoka aktywność to najczęstszy powód zawyżonego wyniku.</p></div>
+      <div class="field wide"><label for="p-goal">Cel</label>
+        <select id="p-goal">
+          <option value="0">Utrzymać wagę</option>
+          <option value="-275">Schudnąć 0,25 kg / tydzień (−275 kcal dziennie)</option>
+          <option value="-550">Schudnąć 0,5 kg / tydzień (−550 kcal dziennie)</option>
+          <option value="-825">Schudnąć 0,75 kg / tydzień (−825 kcal dziennie)</option>
+          <option value="275">Przytyć 0,25 kg / tydzień (+275 kcal dziennie)</option>
+          <option value="550">Przytyć 0,5 kg / tydzień (+550 kcal dziennie)</option>
+        </select></div>
+      <div class="row">
+        <div class="field"><label for="p-formula">Wzór</label>
+          <select id="p-formula">
+            <option value="mifflin">Mifflin-St Jeor</option>
+            <option value="harris">Harris-Benedict</option>
+            <option value="katch">Katch-McArdle</option>
+          </select></div>
+        <div class="field"><label for="p-bf">Tkanka tłuszczowa (%)</label><input type="text" id="p-bf" inputmode="decimal" placeholder="opcjonalnie"></div>
+      </div>
+      <div class="field wide"><label for="p-target">Waga docelowa (kg)</label><input type="text" id="p-target" inputmode="decimal" placeholder="opcjonalnie"></div>
+      <button class="btn" type="submit">Zapisz i przelicz</button>
+      <p class="hint" id="p-saved" hidden>Zapisano.</p>
     </form>
-    <div class="panel">
-      <h3>Dzienne zapotrzebowanie</h3>
-      <div class="stats" id="p-stats"></div>
-      <p class="formula" id="p-formula"></p>
-    </div>
-    <div class="panel">
-      <h3>Kopia zapasowa</h3>
-      <p class="small muted">Dane są tylko na tym telefonie. Raz na jakiś czas zapisz kopię w aplikacji Pliki albo wyślij ją sobie. Z kopii odtworzysz dane po zmianie telefonu.</p>
+    <div class="card">
+      <h2>Kopia zapasowa</h2>
+      <p class="sub">Dane są tylko na tym telefonie. Co jakiś czas zapisz kopię w aplikacji Pliki albo wyślij ją sobie.</p>
       <div class="row">
         <button class="btn" type="button" id="b-export">Zapisz kopię</button>
-        <label class="btn ghost" for="b-import" style="display:inline-block;cursor:pointer">Wczytaj kopię</label>
+        <label class="btn ghost" for="b-import" tabindex="0">Wczytaj kopię</label>
         <input type="file" id="b-import" accept="application/json,.json" hidden>
       </div>
-      <p class="small" id="b-msg" hidden></p>
+      <p class="hint" id="b-msg" hidden></p>
     </div>
   </section>
 </div>
+
+<nav class="tabbar" aria-label="Zakładki"><div class="in" role="tablist">
+  <button role="tab" id="t-kalorie" data-tab="kalorie" aria-selected="true">
+    <svg viewBox="0 0 24 24"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1-3.6 2-4.6.3 1.6 1 2.6 2 3.1-.4-3 .3-5.8 1-8.5z"/></svg>Kalorie</button>
+  <button role="tab" id="t-waga" data-tab="waga" aria-selected="false">
+    <svg viewBox="0 0 24 24"><path d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10"/><circle cx="12" cy="14.5" r="6"/></svg>Waga</button>
+  <button role="tab" id="t-trening" data-tab="trening" aria-selected="false">
+    <svg viewBox="0 0 24 24"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg>Trening</button>
+  <button role="tab" id="t-profil" data-tab="profil" aria-selected="false">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.3 7.5-5.3s6.3 1.7 7.5 5.3"/></svg>Profil</button>
+</div></nav>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -258,15 +324,20 @@ const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y
 const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
 const weekStart = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); return addDays(x, -((x.getDay()+6)%7)); };
 const DOW = ['Pn','Wt','Śr','Cz','Pt','So','Nd'];
-const dmy = s => { const d = parse(s); return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0'); };
+const dmy = s => { const d = parse(s); return d.getDate()+'.'+String(d.getMonth()+1).padStart(2,'0'); };
+const dayMonth = s => parse(s).toLocaleDateString('pl-PL', {day:'numeric', month:'short'});
 const longDate = s => parse(s).toLocaleDateString('pl-PL', {weekday:'long', day:'numeric', month:'long'});
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const todayStr = () => ymd(new Date());
+const dec = sel => parseFloat($(sel).value.replace(',', '.').replace(/\s/g, ''));
+const decStr = v => v == null || v === '' ? '' : String(v).replace('.', ',');
+const plural = (n, one, few, many) => n === 1 ? one : (n%10 >= 2 && n%10 <= 4 && (n%100 < 12 || n%100 > 14)) ? few : many;
 
 const state = { profile:null, weights:[], days:{}, trainings:[] };
 let store = null;
 let selDate = todayStr();
 
-function setStatus(msg, cls){ const el = $('#status'); el.textContent = msg; el.className = 'status' + (cls ? ' '+cls : ''); }
+function setStatus(msg){ const el = $('#status'); el.textContent = msg || ''; el.hidden = !msg; }
 
 /* ---------- storage: this phone (localStorage) ---------- */
 function localStore(){
@@ -294,224 +365,242 @@ function localStore(){
 }
 
 async function save(p){
-  try { await p; } catch(e) {
-    setStatus('Nie udało się zapisać na telefonie. Zwolnij miejsce albo wyłącz tryb prywatny w Safari.', 'err');
+  try { await p; setStatus(''); } catch(e) {
+    setStatus('Nie udało się zapisać na telefonie. Zwolnij miejsce albo wyłącz tryb prywatny w Safari.');
     throw e;
   }
 }
 
 /* ---------- calculations ---------- */
+// BMR formulas used by common calculators (calculator.net, Omni, Fitatu, MyFitnessPal):
+// Mifflin-St Jeor (1990), Harris-Benedict revised by Roza & Shizgal (1984), Katch-McArdle (needs body fat %).
+const FORMULAS = {
+  mifflin: { name:'Mifflin-St Jeor', bmr: p => 10*p.w + 6.25*p.h - 5*p.a + (p.sex === 'k' ? -161 : 5) },
+  harris:  { name:'Harris-Benedict', bmr: p => p.sex === 'k' ? 447.593 + 9.247*p.w + 3.098*p.h - 4.330*p.a
+                                                             : 88.362 + 13.397*p.w + 4.799*p.h - 5.677*p.a },
+  katch:   { name:'Katch-McArdle',   bmr: p => p.bf ? 370 + 21.6 * p.w * (1 - p.bf/100) : null },
+};
+const MIN_KCAL = { m:1500, k:1200 }; // common safe minimum intake per day
 function sortedWeights(){ return [...state.weights].sort((a,b) => a.date < b.date ? -1 : 1); }
 function calc(){
-  const p = state.profile; if (!p) return null;
+  const p = state.profile; if (!p || !p.activity) return null;
   const ws = sortedWeights();
-  const weight = ws.length ? ws[ws.length-1].kg : p.weight;
-  const bmr = 10*weight + 6.25*p.height - 5*p.age + (p.sex === 'k' ? -161 : 5);
-  const tdee = bmr * p.activity;
-  const raw = Math.round(tdee + p.goal), target = Math.max(1200, raw);
-  const bmi = weight / Math.pow(p.height/100, 2);
-  return { weight, bmr:Math.round(bmr), tdee:Math.round(tdee), target, floored: raw < 1200, bmi };
+  const w = ws.length ? ws[ws.length-1].kg : p.weight;
+  const inp = { w, h:p.height, a:p.age, sex:p.sex, bf:p.bodyFat || null };
+  const all = Object.entries(FORMULAS).map(([id, f]) => {
+    const b = f.bmr(inp); return { id, name:f.name, bmr: b == null ? null : Math.round(b), tdee: b == null ? null : Math.round(b * p.activity) };
+  });
+  const formula = (p.formula === 'katch' && !inp.bf) ? 'mifflin' : (p.formula || 'mifflin');
+  const sel = all.find(r => r.id === formula);
+  const goal = +p.goal || 0, raw = sel.tdee + goal, min = MIN_KCAL[p.sex] || 1200;
+  const target = goal < 0 ? Math.max(min, raw) : raw;
+  return { weight:w, all, formula, bmr:sel.bmr, tdee:sel.tdee, goal, target, floored: target !== raw, min, bmi: w / Math.pow(p.height/100, 2) };
 }
 const eatenOn = date => +(state.days[date]?.kcal || 0);
-const dec = sel => parseFloat($(sel).value.replace(',', '.').trim());
-const decStr = v => v == null || v === '' ? '' : String(v).replace('.', ',');
 
 /* ---------- render ---------- */
-function render(){ renderWeight(); renderCalories(); renderTraining(); renderProfile(); }
-
-const stat = (label, value, unit='', cls='') => `<div class="stat"><h3>${label}</h3><b class="${cls}">${value}${unit ? `<small>${unit}</small>` : ''}</b></div>`;
+function render(){ renderCalories(); renderWeight(); renderTraining(); renderProfile(); }
+const fig = (label, value, unit='', cls='') => `<div class="fig"><span class="label">${label}</span><b class="${cls}">${value}${unit ? `<small>${unit}</small>` : ''}</b></div>`;
 const delBtn = (action, arg) => `<button type="button" class="del" data-action="${action}" data-arg="${esc(arg)}">Usuń</button>`;
+const kcal = n => fmt(n) + ' kcal';
+
+// limit as a track, eaten parts as segments, anything past the limit in the negative colour
+function track(parts, limit){
+  const total = parts.reduce((s,v) => s+v, 0), scale = Math.max(limit, total) || 1;
+  let used = 0, html = '';
+  parts.forEach(v => {
+    if (!v) return;
+    const inLimit = Math.max(0, Math.min(v, limit - used)), over = v - inLimit;
+    if (inLimit) html += `<span style="width:calc(${inLimit/scale*100}% - 2px)"></span>`;
+    if (over) html += `<span class="over" style="width:calc(${over/scale*100}% - 2px)"></span>`;
+    used += v;
+  });
+  return `<div class="track" role="img" aria-label="${fmt(total)} z ${fmt(limit)} kcal">${html}</div>`;
+}
+
+function renderCalories(){
+  const c = calc(), isToday = selDate === todayStr();
+  $('#c-date').value = selDate;
+  $('#c-dayname').textContent = isToday ? 'Dziś' : cap(longDate(selDate));
+  const eaten = eatenOn(selDate);
+  if (document.activeElement !== $('#c-kcal')) $('#c-kcal').value = eaten ? String(eaten) : '';
+  $('#c-kcal-label').textContent = isToday ? 'Zjedzone dziś (kcal)' : 'Zjedzone tego dnia (kcal)';
+  if (!c){
+    $('#c-limitchip').hidden = true;
+    $('#c-dayblock').innerHTML = `<div class="lead"><span class="label">Zjedzone</span><span class="big">${fmt(eaten)}<small>kcal</small></span></div>
+      <p class="empty">Uzupełnij <a href="#profil" data-go="profil">profil</a> (wiek, wzrost, waga, aktywność), żeby policzyć dzienny limit.</p>`;
+  } else {
+    const left = c.target - eaten;
+    $('#c-limitchip').hidden = false;
+    $('#c-limitchip').textContent = 'Limit ' + kcal(c.target);
+    $('#c-dayblock').innerHTML = `<div class="lead"><span class="label">${left >= 0 ? 'Zostało do zjedzenia' : 'Ponad limit'}</span>
+        <span class="big ${left < 0 ? 'over' : ''}">${fmt(Math.abs(left))}<small>kcal</small></span></div>
+      <div class="meter">${track([eaten], c.target)}
+      <div class="track-ends num"><span>Zjedzone ${fmt(eaten)}</span><span>Limit ${fmt(c.target)}</span></div></div>`;
+  }
+
+  const ws = weekStart(parse(selDate)), days = [...Array(7)].map((_,i) => ymd(addDays(ws, i)));
+  $('#c-weektitle').textContent = `${dayMonth(days[0])} – ${dayMonth(days[6])}`;
+  const today = todayStr(), eatenDays = days.map(eatenOn), sumE = eatenDays.reduce((s,v) => s+v, 0);
+  if (c){
+    const limit = c.target * 7, left = limit - sumE, open = days.filter(d => d >= today && !eatenOn(d)).length;
+    $('#c-weekblock').innerHTML = `<div class="lead"><span class="label">${left >= 0 ? 'Zostało w tym tygodniu' : 'Ponad limit tygodnia'}</span>
+        <span class="big ${left < 0 ? 'over' : ''}">${fmt(Math.abs(left))}<small>kcal</small></span></div>
+      ${track(eatenDays, limit)}
+      <div class="figs">${fig('Limit tygodnia', fmt(limit), 'kcal')}${fig('Zjedzone', fmt(sumE), 'kcal')}
+        ${fig(open ? 'Na dzień' : 'Dni bez wpisu', open && left > 0 ? fmt(Math.round(left/open)) : '—', open && left > 0 ? 'kcal' : '')}</div>
+      <p class="hint num">7 × ${fmt(c.target)} = ${fmt(limit)} kcal, minus zjedzone ${fmt(sumE)} kcal${open && left > 0 ? `, podzielone na ${open} ${plural(open,'dzień','dni','dni')} bez wpisu` : ''}.</p>`;
+  } else {
+    $('#c-weekblock').innerHTML = `<div class="lead"><span class="label">Zjedzone w tym tygodniu</span><span class="big">${fmt(sumE)}<small>kcal</small></span></div>`;
+  }
+  $('#c-weekchart').innerHTML = weekChart(days, eatenDays, c ? c.target : 0, today);
+}
+
+function weekChart(days, vals, limit, today){
+  const W = 340, H = 168, L = 2, R = 2, T = 20, B = 24, slot = (W-L-R)/7;
+  const max = Math.max(limit * 1.15, ...vals.map(v => v * 1.1), 1500);
+  const Y = v => T + (1 - v/max) * (H - T - B);
+  let s = `<line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}" stroke="var(--grid)" stroke-width="1"/>`;
+  if (limit) s += `<line x1="${L}" x2="${W-R}" y1="${Y(limit)}" y2="${Y(limit)}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="${W-R}" y="${Y(limit)-6}" text-anchor="end">limit ${fmt(limit)}</text>`;
+  days.forEach((d, i) => {
+    const v = vals[i], x = L + i*slot + slot*0.22, w = slot*0.56, over = limit && v > limit;
+    if (v){
+      const y = Y(v), h = H - B - y;
+      s += `<path d="M${x},${H-B} V${y+4} q0,-4 4,-4 h${w-8} q4,0 4,4 V${H-B} Z" fill="${over ? 'var(--negative)' : 'var(--accent)'}" opacity="${d === selDate ? 1 : .8}"><title>${dmy(d)}: ${fmt(v)} kcal</title></path>`;
+      s += `<text x="${x+w/2}" y="${y-5}" text-anchor="middle">${fmt(v)}</text>`;
+    }
+    s += `<text x="${x+w/2}" y="${H-7}" text-anchor="middle" style="${d===selDate ? 'fill:var(--text);font-weight:600' : ''}">${DOW[i]}</text>`;
+    s += `<rect x="${L+i*slot}" y="0" width="${slot}" height="${H}" fill="transparent" data-day="${d}" style="cursor:pointer"><title>${cap(longDate(d))}</title></rect>`;
+  });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Kalorie w tygodniu, przerywana linia to limit">${s}</svg>`;
+}
 
 function renderWeight(){
   const ws = sortedWeights(), c = calc(), p = state.profile;
   const rem = $('#w-reminder');
-  if (!ws.length) rem.innerHTML = '';
-  else {
-    const days = Math.round((parse(todayStr()) - parse(ws[ws.length-1].date)) / 864e5);
-    rem.innerHTML = days >= 7 ? `<span class="pill bad">Czas na ważenie · ${days} dni od ostatniego</span>`
-                              : `<span class="pill">Następne ważenie za ${7-days} ${7-days === 1 ? 'dzień' : 'dni'}</span>`;
-  }
   if (!ws.length){
-    $('#w-stats').innerHTML = '';
-    $('#w-chart').innerHTML = '<p class="empty">Brak pomiarów. Dodaj pierwszy poniżej – najlepiej raz w tygodniu, rano, na czczo, o tej samej porze.</p>';
-    $('#w-list').innerHTML = '<li class="empty">Tu pojawi się historia pomiarów.</li>';
+    rem.innerHTML = '';
+    $('#w-lead').innerHTML = '<p class="empty">Brak pomiarów. Dodaj pierwszy poniżej.</p>';
+    $('#w-chart').innerHTML = ''; $('#w-figs').innerHTML = '';
+    $('#w-list').innerHTML = '<li class="s">Tu pojawią się Twoje pomiary.</li>';
     return;
   }
+  const days = Math.round((parse(todayStr()) - parse(ws[ws.length-1].date)) / 864e5);
+  rem.innerHTML = days >= 7 ? `<span class="chip warn">Czas się zważyć · ${days} dni</span>`
+                            : `<span class="chip wt">Następne za ${7-days} ${plural(7-days,'dzień','dni','dni')}</span>`;
   const last = ws[ws.length-1], first = ws[0], prev = ws[ws.length-2];
-  const total = last.kg - first.kg, wk = prev ? last.kg - prev.kg : null;
   const sign = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + fmt(Math.abs(v), 1);
-  const goalDown = p ? p.goal <= 0 : true;
-  const tone = v => v === 0 ? '' : ((v < 0) === goalDown ? 'good' : 'bad');
-  let html = stat('Aktualnie', fmt(last.kg,1), 'kg') +
-             stat('Od poprz. pomiaru', wk === null ? '—' : sign(wk), wk === null ? '' : 'kg', wk === null ? '' : tone(wk)) +
-             stat('Od początku', sign(total), 'kg', tone(total));
-  if (c) html += stat('BMI', fmt(c.bmi,1));
-  if (p && p.targetWeight) html += stat('Do celu', fmt(Math.abs(last.kg - p.targetWeight),1), 'kg');
-  $('#w-stats').innerHTML = html;
+  const goalDown = p ? (+p.goal || 0) <= 0 : true;
+  const tone = v => Math.abs(v) < 0.05 ? '' : ((v < 0) === goalDown ? 'good' : 'bad');
+  const wk = prev ? last.kg - prev.kg : null;
+  $('#w-lead').innerHTML = `<div class="lead"><span class="label">Aktualnie, ${dayMonth(last.date)}</span>
+    <span class="big">${fmt(last.kg,1)}<small>kg</small></span>
+    ${wk === null ? '' : `<span class="sub"><b class="${tone(wk)} num">${sign(wk)} kg</b> od pomiaru ${dayMonth(prev.date)}</span>`}</div>`;
   $('#w-chart').innerHTML = ws.length < 2 ? '<p class="empty">Wykres pojawi się po drugim pomiarze.</p>' : weightChart(ws, p && p.targetWeight);
+  const total = last.kg - first.kg;
+  $('#w-figs').innerHTML = `<div class="figs">${fig('Od ' + dayMonth(first.date), sign(total), 'kg', tone(total))}${fig('BMI', c ? fmt(c.bmi,1) : '—')}
+    ${fig('Do celu', p && p.targetWeight ? fmt(Math.abs(last.kg - p.targetWeight),1) : '—', p && p.targetWeight ? 'kg' : '')}</div>`;
   $('#w-list').innerHTML = [...ws].reverse().map((w, i, arr) => {
-    const nxt = arr[i+1]; const d = nxt ? w.kg - nxt.kg : null;
-    return `<li><span class="grow">${esc(longDate(w.date))}</span>
-      ${d === null ? '' : `<span class="num small ${tone(d)}">${sign(d)}</span>`}
-      <b class="num">${fmt(w.kg,1)} kg</b>${delBtn('delWeight', w.date)}</li>`;
+    const nxt = arr[i+1], d = nxt ? w.kg - nxt.kg : null;
+    return `<li><div class="grow"><div class="t">${esc(cap(longDate(w.date)))}</div></div>
+      <span class="d ${d === null ? '' : tone(d)}">${d === null ? '—' : sign(d)}</span>
+      <span class="v">${fmt(w.kg,1)} kg</span>${delBtn('delWeight', w.date)}</li>`;
   }).join('');
 }
 
-function niceStep(range){ for (const s of [0.5,1,2,5,10,20]) if (range/s <= 5) return s; return 50; }
+function niceStep(range){ for (const s of [0.5,1,2,5,10,20]) if (range/s <= 4) return s; return 50; }
 function weightChart(ws, goal){
-  const W = 360, H = 210, L = 40, R = 12, T = 14, B = 26;
+  const W = 340, H = 180, L = 30, R = 8, T = 12, B = 22;
   const xs = ws.map(w => parse(w.date).getTime()), ys = ws.map(w => w.kg);
   if (goal) ys.push(goal);
   let lo = Math.min(...ys), hi = Math.max(...ys);
-  const step = niceStep(Math.max(hi-lo, 1) + 1);
-  lo = Math.floor((lo - step*0.3)/step)*step; hi = Math.ceil((hi + step*0.3)/step)*step;
+  const step = niceStep(Math.max(hi-lo, 1));
+  lo = Math.floor(lo/step)*step - (lo % step === 0 ? step : 0); hi = Math.ceil(hi/step)*step + (hi % step === 0 ? step : 0);
   const x0 = xs[0], x1 = xs[xs.length-1];
   const X = t => L + (t - x0) / (x1 - x0) * (W - L - R);
   const Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
   let g = '';
   for (let v = lo; v <= hi + 1e-9; v += step){
-    g += `<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" stroke-width="1"/>`;
-    g += `<text x="${L-8}" y="${Y(v)+4}" text-anchor="end">${fmt(v, step < 1 ? 1 : 0)}</text>`;
+    g += `<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
+    g += `<text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${fmt(v, step < 1 ? 1 : 0)}</text>`;
   }
-  const n = ws.length, idx = n <= 6 ? ws.map((_,i) => i) : [0, Math.round((n-1)/3), Math.round(2*(n-1)/3), n-1];
-  idx.forEach(i => g += `<text x="${X(xs[i])}" y="${H-8}" text-anchor="${i===0?'start':i===n-1?'end':'middle'}">${dmy(ws[i].date)}</text>`);
-  if (goal) g += `<line x1="${L}" x2="${W-R}" y1="${Y(goal)}" y2="${Y(goal)}" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="5 5"/>
-                  <text x="${W-R}" y="${Y(goal)-6}" text-anchor="end" style="fill:var(--good)">cel ${fmt(goal,1)} kg</text>`;
+  const n = ws.length, idx = n <= 5 ? ws.map((_,i) => i) : [0, Math.round((n-1)/3), Math.round(2*(n-1)/3), n-1];
+  idx.forEach(i => g += `<text x="${X(xs[i])}" y="${H-5}" text-anchor="${i===0?'start':i===n-1?'end':'middle'}">${dmy(ws[i].date)}</text>`);
+  if (goal) g += `<line x1="${L}" x2="${W-R}" y1="${Y(goal)}" y2="${Y(goal)}" stroke="var(--teal)" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="${L+4}" y="${Y(goal)-5}" style="fill:var(--teal-ink)">cel ${fmt(goal,1)}</text>`;
   const pts = ws.map((w,i) => `${X(xs[i]).toFixed(1)},${Y(w.kg).toFixed(1)}`);
-  const area = `M${X(x0)},${H-B} L${pts.join(' L')} L${X(x1)},${H-B} Z`;
-  const dots = ws.map((w,i) => `<circle cx="${X(xs[i])}" cy="${Y(w.kg)}" r="${i===n-1?5.5:3}" fill="${i===n-1?'var(--accent)':'var(--surface)'}" stroke="var(--accent)" stroke-width="2"><title>${dmy(w.date)}: ${fmt(w.kg,1)} kg</title></circle>`).join('');
-  const lastLbl = `<text x="${X(x1)-8}" y="${Y(ws[n-1].kg)-10}" text-anchor="end" style="fill:var(--ink);font-weight:500">${fmt(ws[n-1].kg,1)} kg</text>`;
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Wykres wagi">
-    ${g}<path d="${area}" fill="var(--accent)" fill-opacity=".1"/>
-    <polyline points="${pts.join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-    ${dots}${lastLbl}</svg>`;
-}
-
-function ring(eaten, budget){
-  const r = 58, C = 2*Math.PI*r, frac = budget ? Math.min(eaten/budget, 1) : 0, over = budget && eaten > budget;
-  const left = budget - eaten;
-  return `<svg class="ring" viewBox="0 0 150 150" width="150" height="150" role="img" aria-label="Pozostało ${left} kcal">
-    <circle cx="75" cy="75" r="${r}" fill="none" stroke="var(--line)" stroke-width="12"/>
- ${frac > 0 ? `<circle class="arc" cx="75" cy="75" r="${r}" fill="none" stroke="${over?'var(--bad)':'var(--accent)'}" stroke-width="12" stroke-linecap="round"
-      stroke-dasharray="${C}" stroke-dashoffset="${C*(1-frac)}" transform="rotate(-90 75 75)"/>` : ''}
-    <text x="75" y="74" text-anchor="middle" font-size="28" font-weight="700" fill="${over?'var(--bad)':'var(--ink)'}">${fmt(Math.abs(left))}</text>
-    <text x="75" y="96" text-anchor="middle" font-size="12" fill="var(--muted)" style="font-family:var(--body)">${over?'kcal ponad limit':'kcal zostało'}</text></svg>`;
-}
-
-function renderCalories(){
-  const c = calc();
-  $('#c-date').value = selDate;
-  const isToday = selDate === todayStr();
-  $('#c-dayname').textContent = isToday ? 'Dziś' : longDate(selDate).replace(/^./, m => m.toUpperCase());
-  const eaten = eatenOn(selDate);
-  if (document.activeElement !== $('#c-kcal')) $('#c-kcal').value = eaten || '';
-  $('#c-kcal-label').textContent = isToday ? 'Ile zjadłeś dziś (kcal)' : 'Ile zjadłeś tego dnia (kcal)';
-  if (!c){
-    $('#c-ring').innerHTML = ring(eaten, 0);
-    $('#c-daystats').innerHTML = stat('Zjedzone', fmt(eaten), 'kcal');
-    $('#c-dayformula').innerHTML = 'Uzupełnij <a href="#profil" data-go="profil">profil</a> (waga, wzrost, wiek), żeby policzyć dzienny limit.';
-  } else {
-    const left = c.target - eaten;
-    $('#c-ring').innerHTML = ring(eaten, c.target);
-    $('#c-daystats').innerHTML = stat('Limit dzienny', fmt(c.target), 'kcal') + stat('Zjedzone', fmt(eaten), 'kcal') +
-      stat(left >= 0 ? 'Zostało' : 'Ponad limit', fmt(Math.abs(left)), 'kcal', left >= 0 ? 'good' : 'bad');
-    $('#c-dayformula').textContent = `${fmt(c.target)} − ${fmt(eaten)} = ${left < 0 ? '−' : ''}${fmt(Math.abs(left))} kcal`;
-  }
-
-  // week
-  const ws = weekStart(parse(selDate)), days = [...Array(7)].map((_,i) => ymd(addDays(ws, i)));
-  $('#c-weektitle').textContent = `${dmy(days[0])} – ${dmy(days[6])}`;
-  const today = todayStr();
-  const rows = days.map(d => ({ d, eaten:eatenOn(d), budget: c ? c.target : 0 }));
-  const sumE = rows.reduce((s,r) => s + r.eaten, 0);
-  if (c){
-    const weekLimit = c.target * 7, left = weekLimit - sumE;
-    const open = days.filter(d => d >= today && !eatenOn(d)).length;
-    $('#c-weekstats').innerHTML = stat('Limit tygodnia', fmt(weekLimit), 'kcal') + stat('Zjedzone w tyg.', fmt(sumE), 'kcal') +
-      stat(left >= 0 ? 'Zostało w tyg.' : 'Ponad limit', fmt(Math.abs(left)), 'kcal', left >= 0 ? 'good' : 'bad') +
-      (open && left > 0 ? stat(`Na ${open} ${open === 1 ? 'dzień' : 'dni'} bez wpisu`, fmt(Math.round(left/open)), 'kcal/dzień') : '');
-    $('#c-weekformula').textContent = `7 × ${fmt(c.target)} = ${fmt(weekLimit)} kcal  ·  ${fmt(weekLimit)} − ${fmt(sumE)} = ${left < 0 ? '−' : ''}${fmt(Math.abs(left))} kcal`;
-  } else {
-    $('#c-weekstats').innerHTML = stat('Suma tygodnia', fmt(sumE), 'kcal');
-    $('#c-weekformula').textContent = '';
-  }
-  $('#c-weekchart').innerHTML = weekChart(rows, today);
-}
-
-function weekChart(rows, today){
-  const W = 360, H = 180, L = 4, R = 4, T = 22, B = 26, slot = (W-L-R)/7;
-  const max = Math.max(1500, ...rows.map(r => Math.max(r.eaten, r.budget))) * 1.12;
-  const Y = v => T + (1 - v/max) * (H - T - B);
-  let s = `<line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}" stroke="var(--line)"/>`;
-  rows.forEach((r, i) => {
-    const x = L + i*slot + slot*0.2, w = slot*0.6, over = r.budget && r.eaten > r.budget;
-    if (r.budget) s += `<line x1="${x-4}" x2="${x+w+4}" y1="${Y(r.budget)}" y2="${Y(r.budget)}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
-    if (r.eaten) s += `<rect x="${x}" y="${Y(r.eaten)}" width="${w}" height="${H-B-Y(r.eaten)}" rx="4" fill="${over?'var(--bad)':'var(--accent)'}" fill-opacity="${r.d===selDate?1:.75}"><title>${dmy(r.d)}: ${fmt(r.eaten)} kcal</title></rect>
-      <text x="${x+w/2}" y="${Y(r.eaten)-6}" text-anchor="middle">${fmt(r.eaten)}</text>`;
-    s += `<text x="${x+w/2}" y="${H-9}" text-anchor="middle" style="${r.d===today?'fill:var(--ink);font-weight:500':''}">${DOW[i]}</text>`;
-    s += `<rect x="${L+i*slot}" y="0" width="${slot}" height="${H}" fill="transparent" data-day="${r.d}" style="cursor:pointer"/>`;
-  });
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Kalorie w tygodniu; linia przerywana to limit">${s}</svg>
-    <p class="small muted">Słupek = zjedzone, przerywana linia = limit dnia. Kliknij dzień, żeby go otworzyć.</p>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Wykres wagi">${g}
+    <path d="M${X(x0)},${H-B} L${pts.join(' L')} L${X(x1)},${H-B} Z" fill="var(--teal)" fill-opacity=".12"/>
+    <polyline points="${pts.join(' ')}" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="${X(x1)}" cy="${Y(ws[n-1].kg)}" r="4" fill="var(--teal)"/></svg>`;
 }
 
 function renderTraining(){
   const ts = [...state.trainings].sort((a,b) => (a.date === b.date ? (b.createdAt||0) - (a.createdAt||0) : a.date < b.date ? 1 : -1));
   const ws = ymd(weekStart(new Date())), we = ymd(addDays(weekStart(new Date()), 6));
   const wk = ts.filter(t => t.date >= ws && t.date <= we);
-  const lastDate = ts[0]?.date;
-  $('#t-stats').innerHTML = stat('W tym tygodniu', wk.length, wk.length === 1 ? 'trening' : 'treningi') +
-    stat('Czas w tyg.', fmt(wk.reduce((s,t) => s + (+t.minutes||0), 0)), 'min') +
-    stat('Spalone w tyg.', fmt(wk.reduce((s,t) => s + (+t.kcal||0), 0)), 'kcal') +
-    stat('Ostatni', lastDate ? dmy(lastDate) : '—');
-  $('#t-list').innerHTML = ts.length ? ts.map(t => `<li class="tr"><div class="grow">
-      <div class="tr-head"><b>${esc(t.type)}</b><span class="small muted">${esc(longDate(t.date))}</span>
-      ${t.minutes ? `<span class="pill">${fmt(t.minutes)} min</span>` : ''}${t.kcal ? `<span class="pill">${fmt(t.kcal)} kcal</span>` : ''}</div>
-      ${t.notes ? `<div class="tr-notes">${esc(t.notes)}</div>` : ''}</div>${delBtn('delTraining', t.id)}</li>`).join('')
-    : '<li class="empty">Brak treningów. Zapisz pierwszy powyżej – rodzaj, czas i ćwiczenia z seriami.</li>';
+  $('#t-range').textContent = `${dayMonth(ws)} – ${dayMonth(we)}`;
+  const mins = wk.reduce((s,t) => s + (+t.minutes||0), 0), burned = wk.reduce((s,t) => s + (+t.kcal||0), 0);
+  $('#t-lead').innerHTML = `<div class="lead"><span class="label">Treningi</span><span class="big">${wk.length}<small>${plural(wk.length,'trening','treningi','treningów')}</small></span></div>
+    <div class="figs">${fig('Czas', fmt(mins), 'min')}${fig('Spalone', burned ? fmt(burned) : '—', burned ? 'kcal' : '')}${fig('Ostatni', ts[0] ? dayMonth(ts[0].date) : '—')}</div>`;
+  $('#t-list').innerHTML = ts.length ? ts.map(t => `<li style="align-items:flex-start"><div class="grow">
+      <div class="row" style="gap:8px;align-items:center"><span class="t">${esc(t.type)}</span><span class="s">${esc(cap(longDate(t.date)))}</span></div>
+      <div class="row" style="gap:6px;margin-top:6px">${t.minutes ? `<span class="chip tr num">${fmt(t.minutes)} min</span>` : ''}${t.kcal ? `<span class="chip tr num">${fmt(t.kcal)} kcal</span>` : ''}</div>
+      ${t.notes ? `<div class="notes">${esc(t.notes)}</div>` : ''}</div>${delBtn('delTraining', t.id)}</li>`).join('')
+    : '<li class="s">Brak treningów. Zapisz pierwszy powyżej.</li>';
 }
 
 function renderProfile(){
-  const c = calc();
+  const c = calc(), p = state.profile, box = $('#p-result');
   if (!c){
-    $('#p-stats').innerHTML = '<p class="empty">Wpisz wiek, wzrost i wagę, a policzę Twoje dzienne zapotrzebowanie.</p>';
-    $('#p-formula').textContent = '';
+    box.innerHTML = `<h2>Dzienne zapotrzebowanie</h2><p class="empty">Wpisz wiek, wzrost, wagę i wybierz aktywność, a policzę, ile kalorii spalasz w ciągu dnia.</p>`;
     return;
   }
-  const p = state.profile;
-  $('#p-stats').innerHTML = stat('Podstawowa przemiana (BMR)', fmt(c.bmr), 'kcal') + stat('Zapotrzebowanie (TDEE)', fmt(c.tdee), 'kcal') +
-    stat('Twój cel dzienny', fmt(c.target), 'kcal', '') + stat('Cel tygodniowy', fmt(c.target*7), 'kcal');
-  $('#p-formula').textContent = `Wzór Mifflina-St Jeora dla wagi ${fmt(c.weight,1)} kg` + (state.weights.length ? ' (z ostatniego pomiaru)' : '') +
-    `, ${p.height} cm, ${p.age} lat; TDEE = BMR × ${String(p.activity).replace('.', ',')}; cel = TDEE ${p.goal >= 0 ? '+' : '−'} ${Math.abs(p.goal)} kcal` +
-    (c.floored ? ` = ${fmt(c.tdee + p.goal)} kcal, podniesione do bezpiecznego minimum 1200 kcal.` : '.');
+  const goalTxt = c.goal === 0 ? 'cel: utrzymać wagę' : (c.goal < 0 ? 'cel: schudnąć' : 'cel: przytyć');
+  box.innerHTML = `<div class="card-head"><h2>Dzienne zapotrzebowanie</h2><span class="chip cal">${esc(FORMULAS[c.formula].name)}</span></div>
+    <div class="lead"><span class="label">Tyle spalasz dziennie (TDEE)</span><span class="big">${fmt(c.tdee)}<small>kcal</small></span>
+      <span class="sub">${fmt(c.weight,1)} kg · ${p.height} cm · ${p.age} lat · aktywność ×${decStr(p.activity)}</span></div>
+    <div class="figs">${fig('Podstawowa (BMR)', fmt(c.bmr), 'kcal')}${fig('Limit jedzenia', fmt(c.target), 'kcal')}${fig('Na tydzień', fmt(c.target*7), 'kcal')}</div>
+    <p class="hint">Limit jedzenia = ${fmt(c.tdee)} ${c.goal < 0 ? '−' : '+'} ${fmt(Math.abs(c.goal))} kcal (${goalTxt})${c.floored ? `, podniesiony do bezpiecznego minimum ${fmt(c.min)} kcal` : ''}.</p>
+    <div style="overflow-x:auto"><table class="ftable"><thead><tr><th>Inne kalkulatory liczą tak</th><th class="n">BMR</th><th class="n">TDEE</th></tr></thead><tbody>
+      ${c.all.map(r => `<tr class="${r.id === c.formula ? 'sel' : ''}"><td>${r.name}</td><td class="n">${r.bmr == null ? '—' : fmt(r.bmr)}</td><td class="n">${r.tdee == null ? 'podaj % tłuszczu' : fmt(r.tdee)}</td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="hint">Wynik to szacunek z dokładnością ok. 10%. Jeśli przez 2–3 tygodnie waga stoi w miejscu przy tym limicie, popraw aktywność albo cel.</p>`;
 }
 
 function fillProfileForm(){
   const p = state.profile, ws = sortedWeights();
+  $('#p-act').value = p && p.activity ? String(p.activity) : '';
   if (!p) return;
-  $('#p-sex').value = p.sex; $('#p-age').value = p.age; $('#p-height').value = p.height;
+  $('#p-sex').value = p.sex; $('#p-age').value = p.age || ''; $('#p-height').value = p.height || '';
   $('#p-weight').value = decStr(ws.length ? ws[ws.length-1].kg : p.weight);
-  $('#p-act').value = String(p.activity); $('#p-goal').value = String(p.goal);
-  $('#p-target').value = decStr(p.targetWeight);
+  const goals = [...$('#p-goal').options].map(o => +o.value);
+  $('#p-goal').value = String(goals.reduce((a,b) => Math.abs(b - (+p.goal||0)) < Math.abs(a - (+p.goal||0)) ? b : a));
+  $('#p-formula').value = p.formula || 'mifflin';
+  $('#p-bf').value = decStr(p.bodyFat); $('#p-target').value = decStr(p.targetWeight);
 }
 
 /* ---------- tabs ---------- */
-const TABS = ['waga','kalorie','trening','profil'];
+const TABS = { kalorie:'Kalorie', waga:'Waga', trening:'Trening', profil:'Profil' };
 function showTab(name){
-  if (!TABS.includes(name)) name = 'kalorie';
-  TABS.forEach(t => { $('#'+t).hidden = t !== name; $('#t-'+t).setAttribute('aria-selected', t === name); });
+  if (!TABS[name]) name = 'kalorie';
+  Object.keys(TABS).forEach(t => { $('#'+t).hidden = t !== name; $('#t-'+t).setAttribute('aria-selected', t === name); });
+  $('#title').textContent = TABS[name];
+  $('#c-date').hidden = name !== 'kalorie';
   try { localStorage.setItem('dziennik-formy-tab', name); } catch(e) {}
+  scrollTo(0, 0);
 }
 let tabPicked = false;
 function pickStartTab(){
   if (tabPicked) return; tabPicked = true;
   const h = location.hash.slice(1);
-  if (TABS.includes(h)) return showTab(h);
-  if (!state.profile) return showTab('profil');
+  if (TABS[h]) return showTab(h);
+  if (!calc()) return showTab('profil');
   let last = null; try { last = localStorage.getItem('dziennik-formy-tab'); } catch(e) {}
   showTab(last || 'kalorie');
 }
-document.querySelectorAll('nav.tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+document.querySelectorAll('.tabbar button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
 document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g){ e.preventDefault(); showTab(g.dataset.go); } });
 
 /* ---------- forms ---------- */
@@ -520,7 +609,7 @@ $('#w-date').value = todayStr(); $('#t-date').value = todayStr();
 $('#w-form').addEventListener('submit', async e => {
   e.preventDefault();
   const kg = Math.round(dec('#w-kg')*10)/10, date = $('#w-date').value;
-  if (!date || !(kg >= 20 && kg <= 400)) { setStatus('Wpisz wagę w kg, np. 82,4.', 'err'); return; }
+  if (!date || !(kg >= 20 && kg <= 400)) { setStatus('Wpisz wagę w kg, np. 82,4.'); return; }
   await save(store.putWeight(date, kg));
   $('#w-kg').value = '';
 });
@@ -532,15 +621,16 @@ $('#c-weekchart').addEventListener('click', e => { const d = e.target.closest('[
 
 $('#c-form').addEventListener('submit', async e => {
   e.preventDefault();
-  const kcal = Math.max(0, Math.round(+$('#c-kcal').value) || 0);
+  const v = $('#c-kcal').value.replace(/\s/g, ''), n = v === '' ? 0 : Math.round(+v);
+  if (!(n >= 0 && n <= 20000)) { setStatus('Wpisz liczbę kalorii, np. 1850.'); return; }
   $('#c-kcal').blur();
-  await save(store.putDay(selDate, kcal));
+  await save(store.putDay(selDate, n));
 });
 
 $('#t-form').addEventListener('submit', async e => {
   e.preventDefault();
-  const t = { date: $('#t-date').value, type: $('#t-type').value, minutes: Math.round(+$('#t-min').value) || 0,
-              kcal: Math.round(+$('#t-kcal').value) || 0, notes: $('#t-notes').value.trim(), createdAt: Date.now() };
+  const t = { date: $('#t-date').value, type: $('#t-type').value, minutes: Math.round(dec('#t-min')) || 0,
+              kcal: Math.round(dec('#t-kcal')) || 0, notes: $('#t-notes').value.trim(), createdAt: Date.now() };
   if (!t.date) return;
   await save(store.putTraining(t));
   $('#t-min').value = ''; $('#t-kcal').value = ''; $('#t-notes').value = '';
@@ -548,19 +638,25 @@ $('#t-form').addEventListener('submit', async e => {
 
 $('#p-form').addEventListener('submit', async e => {
   e.preventDefault();
-  const p = { sex: $('#p-sex').value, age: +$('#p-age').value, height: +$('#p-height').value,
-              weight: Math.round(dec('#p-weight')*10)/10,
-              activity: +$('#p-act').value, goal: +$('#p-goal').value,
+  const p = { sex: $('#p-sex').value, age: Math.round(dec('#p-age')), height: Math.round(dec('#p-height')),
+              weight: Math.round(dec('#p-weight')*10)/10, activity: +$('#p-act').value || null, goal: +$('#p-goal').value,
+              formula: $('#p-formula').value,
+              bodyFat: $('#p-bf').value.trim() ? Math.round(dec('#p-bf')*10)/10 : null,
               targetWeight: $('#p-target').value.trim() ? Math.round(dec('#p-target')*10)/10 : null };
-  if (!(p.weight >= 20 && p.weight <= 400) || (p.targetWeight !== null && !(p.targetWeight >= 20 && p.targetWeight <= 400))) { setStatus('Wpisz wagę w kg, np. 82,4.', 'err'); return; }
+  const bad = !(p.age >= 10 && p.age <= 110) ? 'Wpisz wiek w latach.' : !(p.height >= 100 && p.height <= 250) ? 'Wpisz wzrost w cm, np. 180.'
+    : !(p.weight >= 20 && p.weight <= 400) ? 'Wpisz wagę w kg, np. 82,4.' : !p.activity ? 'Wybierz poziom aktywności.'
+    : (p.bodyFat !== null && !(p.bodyFat >= 3 && p.bodyFat <= 70)) ? 'Tkanka tłuszczowa to zwykle 5–50%.'
+    : (p.formula === 'katch' && p.bodyFat === null) ? 'Wzór Katch-McArdle wymaga % tkanki tłuszczowej.'
+    : (p.targetWeight !== null && !(p.targetWeight >= 20 && p.targetWeight <= 400)) ? 'Wpisz wagę docelową w kg.' : '';
+  if (bad) { setStatus(bad); scrollTo(0,0); return; }
   await save(store.setProfile(p));
-  // keep the weight entered here in the weekly history too
   const ws = sortedWeights(), last = ws[ws.length-1];
   if (!last || last.kg !== p.weight) await save(store.putWeight(todayStr(), p.weight));
   const s = $('#p-saved'); s.hidden = false; setTimeout(() => s.hidden = true, 2500);
+  scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-/* two-click delete */
+/* two-tap delete */
 document.addEventListener('click', async e => {
   const b = e.target.closest('.del'); if (!b || !store) return;
   if (!b.classList.contains('armed')){
@@ -568,13 +664,12 @@ document.addEventListener('click', async e => {
     setTimeout(() => { b.classList.remove('armed'); b.textContent = 'Usuń'; }, 3000);
     return;
   }
-  const arg = b.dataset.arg;
-  if (b.dataset.action === 'delWeight') await save(store.delWeight(arg));
-  if (b.dataset.action === 'delTraining') await save(store.delTraining(arg));
+  if (b.dataset.action === 'delWeight') await save(store.delWeight(b.dataset.arg));
+  if (b.dataset.action === 'delTraining') await save(store.delTraining(b.dataset.arg));
 });
 
 /* ---------- backup ---------- */
-function backupMsg(text, cls){ const m = $('#b-msg'); m.textContent = text; m.className = 'small ' + (cls || 'muted'); m.hidden = false; }
+function backupMsg(text, cls){ const m = $('#b-msg'); m.textContent = text; m.className = 'hint ' + (cls || ''); m.hidden = false; }
 $('#b-export').addEventListener('click', async () => {
   const name = 'dziennik-formy-' + todayStr() + '.json';
   const file = new File([JSON.stringify(store.exportData(), null, 1)], name, { type:'application/json' });
@@ -595,6 +690,7 @@ $('#b-import').addEventListener('change', async e => {
     backupMsg('Wczytano kopię z ' + (o.exported ? new Date(o.exported).toLocaleDateString('pl-PL') : 'pliku') + '.', 'good');
   } catch(err) { backupMsg('To nie jest plik kopii Dziennika Formy.', 'bad'); }
 });
+document.querySelector('label[for="b-import"]').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#b-import').click(); } });
 
 /* ---------- new day while the app stayed open in the background ---------- */
 let lastToday = todayStr();
